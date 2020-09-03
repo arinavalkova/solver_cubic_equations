@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+
+<AnchorPane prefHeight="700.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainApplicationController">
+   <children>
+      <JFXTextField fx:id="firstTextField" focusColor="#f3622d" layoutX="64.0" layoutY="74.0" prefHeight="40.0" prefWidth="40.0" style="-fx-prompt-text-fill: в;" unFocusColor="#f3622d">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </JFXTextField>
+      <JFXTextField fx:id="secondTextField" focusColor="#f3622d" layoutX="164.0" layoutY="74.0" prefHeight="40.0" prefWidth="40.0" style="-fx-prompt-text-fill: #4059a9;" unFocusColor="#f3622d">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </JFXTextField>
+      <JFXTextField fx:id="thirdTextField" focusColor="#f3622d" layoutX="264.0" layoutY="74.0" prefHeight="40.0" prefWidth="40.0" style="-fx-prompt-text-fill: #4059a9;" unFocusColor="#f3622d">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </JFXTextField>
+      <JFXTextField fx:id="fourthTextField" focusColor="#f3622d" layoutX="339.0" layoutY="74.0" prefHeight="40.0" prefWidth="40.0" style="-fx-prompt-text-fill: #4059a9;" unFocusColor="#f3622d">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </JFXTextField>
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="104.0" layoutY="72.0" prefHeight="44.0" prefWidth="60.0" text="x^3 + ">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="204.0" layoutY="74.0" prefHeight="44.0" prefWidth="60.0" text="x^2 + ">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="304.0" layoutY="74.0" prefHeight="44.0" prefWidth="35.0" text="x + ">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <Label alignment="CENTER" contentDisplay="CENTER" layoutX="379.0" layoutY="74.0" prefHeight="44.0" prefWidth="35.0" text="= 0">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <Label fx:id="errorsLabel" layoutX="64.0" layoutY="141.0" prefHeight="18.0" prefWidth="464.0" textFill="#d51515">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <JFXButton fx:id="solveButton" layoutX="453.0" layoutY="74.0" prefHeight="40.0" style="-fx-border-color: #F3622D;" text="Solve">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </JFXButton>
+      <AnchorPane fx:id="graphicsPane" layoutX="58.0" layoutY="185.0" maxHeight="200.0" maxWidth="596.0" minHeight="200.0" minWidth="596.0" prefHeight="200.0" prefWidth="596.0" />
+   </children>
+</AnchorPane>
