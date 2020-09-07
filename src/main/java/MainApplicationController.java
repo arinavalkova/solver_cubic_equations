@@ -150,7 +150,7 @@ public class MainApplicationController
         for(Double currentRoot : rootsOfEquation)
         {
             countOfRoots++;
-            DecimalFormat df = new DecimalFormat("#.##");
+            DecimalFormat df = new DecimalFormat("#.####");
             rootsLine += df.format(currentRoot) + " ";
         }
 
@@ -169,23 +169,34 @@ public class MainApplicationController
 
         if(a > 0 && cubicEquation(0) > 0 || a < 0 && cubicEquation(0) < 0)
         {
-            rootsOfEquation.add(searchingLeftScope());
+            rootsOfEquation.add(searchingLeftScope(a > 0));
         }
         else
         {
-            rootsOfEquation.add(searchingRightScope());
+            rootsOfEquation.add(searchingRightScope(a > 0));
         }
         return rootsOfEquation;
     }
 
-    private double searchingLeftScope()
+    private double searchingLeftScope(boolean isAMoreThenZero)
     {
         int leftScope, rightScope = 0, currentValue = 0;
 
-        while(cubicEquation(currentValue) > 0)
+        if(isAMoreThenZero)
         {
-            rightScope = currentValue;
-            currentValue -= 1;
+            while (cubicEquation(currentValue) > 0)
+            {
+                rightScope = currentValue;
+                currentValue -= 1;
+            }
+        }
+        else
+        {
+            while (cubicEquation(currentValue) < 0)
+            {
+                rightScope = currentValue;
+                currentValue -= 1;
+            }
         }
 
         leftScope = currentValue;
@@ -195,6 +206,7 @@ public class MainApplicationController
 
     private double searchingValueInScope(double leftScope, double rightScope)
     {
+        System.out.println(leftScope + " " + rightScope);
         double currentValueOfEquation = cubicEquation(leftScope);
         if(Math.abs(currentValueOfEquation) <= EPSILON)
             return leftScope;
@@ -214,9 +226,30 @@ public class MainApplicationController
             return searchingValueInScope(mid, rightScope);
     }
 
-    private double searchingRightScope()
+    private double searchingRightScope(boolean isAMoreThenZero)
     {
-        return Double.parseDouble(null);
+        int leftScope = 0, rightScope, currentValue = 0;
+
+        if(isAMoreThenZero)
+        {
+            while (cubicEquation(currentValue) < 0)
+            {
+                leftScope = currentValue;
+                currentValue += 1;
+            }
+        }
+        else
+        {
+            while (cubicEquation(currentValue) > 0)
+            {
+                leftScope = currentValue;
+                currentValue += 1;
+            }
+        }
+
+        rightScope = currentValue;
+
+        return searchingValueInScope(leftScope, rightScope);
     }
 
     private ArrayList<Double> multipleRootsSearching()
