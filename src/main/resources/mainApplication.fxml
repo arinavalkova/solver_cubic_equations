@@ -6,7 +6,6 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-
 <AnchorPane prefHeight="700.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="MainApplicationController">
    <children>
       <JFXTextField fx:id="firstTextField" focusColor="#f3622d" layoutX="64.0" layoutY="74.0" prefHeight="40.0" prefWidth="40.0" style="-fx-prompt-text-fill: в;" unFocusColor="#f3622d">
@@ -60,5 +59,15 @@
          </font>
       </JFXButton>
       <AnchorPane fx:id="graphicsPane" layoutX="58.0" layoutY="185.0" maxHeight="200.0" maxWidth="596.0" minHeight="200.0" minWidth="596.0" prefHeight="200.0" prefWidth="596.0" />
+      <Label fx:id="countOfRootsLabel" layoutX="36.0" layoutY="646.0" prefHeight="18.0" prefWidth="176.0">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
+      <Label fx:id="rootsLabel" layoutX="425.0" layoutY="647.0" prefHeight="18.0" prefWidth="222.0">
+         <font>
+            <Font size="20.0" />
+         </font>
+      </Label>
    </children>
 </AnchorPane>

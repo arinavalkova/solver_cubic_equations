@@ -7,12 +7,17 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+
 public class MainApplicationController
 {
     private static double a;
     private static double b;
     private static double c;
     private static double d;
+
+    private static final double EPSILON = 0.0001;
 
     @FXML
     private JFXTextField firstTextField;
@@ -28,6 +33,12 @@ public class MainApplicationController
 
     @FXML
     private Label errorsLabel;
+
+    @FXML
+    private Label rootsLabel;
+
+    @FXML
+    private Label countOfRootsLabel;
 
     @FXML
     private JFXButton solveButton;
@@ -58,10 +69,16 @@ public class MainApplicationController
     {
         try
         {
-            cleanErrorLabel();
+            cleanLabels();
             getCoefficients();
-            solveEquation();
-            printGraphic();
+
+            ArrayList<Double> rootsOfEquation = solveEquation();
+            if (rootsOfEquation != null)
+            {
+                printRoots(rootsOfEquation);
+            }
+
+            printGraphic(rootsOfEquation);
 
         } catch (NumberFormatException exception)
         {
@@ -69,9 +86,11 @@ public class MainApplicationController
         }
     }
 
-    private void cleanErrorLabel()
+    private void cleanLabels()
     {
         errorsLabel.setText("");
+        rootsLabel.setText("");;
+        countOfRootsLabel.setText("");
     }
 
     private void getCoefficients()
@@ -82,17 +101,17 @@ public class MainApplicationController
         d = Double.parseDouble(fourthTextField.getText());
     }
 
-    private void printGraphic()
+    private void printGraphic(ArrayList<Double> rootsOfEquation)
     {
         final NumberAxis xAxis = new NumberAxis();
         final NumberAxis yAxis = new NumberAxis();
 
-        final LineChart<Number,Number> lineChart =
-                new LineChart<Number,Number>(xAxis,yAxis);
+        final LineChart<Number,Number> lineChart = new LineChart<Number,Number>(xAxis,yAxis);
 
         XYChart.Series series = new XYChart.Series();
+        series.setName(a + " * x^3 + " + b + " * x^2 + " + c + " * x + " + d);
 
-        for(int i = -10; i <= 10; i += 1)//вычислить тут с какого i лучше по какое и шаг
+        for(int i = -4; i <= 4; i += 1)//вычислить тут с какого i лучше по какое и шаг
         {
             series.getData().add(new XYChart.Data(i, cubicEquation(i)));
         }
@@ -108,8 +127,101 @@ public class MainApplicationController
         return a * i * i * i + b * i * i + c * i + d;
     }
 
-    private void solveEquation()
+    private ArrayList<Double> solveEquation()
     {
-        System.out.println("Coefficients: " + a + " " + b + " " + c + " " + d);
+        ArrayList<Double> rootsOfEquation = null;
+
+        if(isDiscriminantMoreThanZero())
+        {
+            rootsOfEquation = oneRootSearching();
+        }
+        else
+        {
+            rootsOfEquation = multipleRootsSearching();
+        }
+        return rootsOfEquation;
+    }
+
+    private void printRoots(ArrayList<Double> rootsOfEquation)
+    {
+        int countOfRoots = 0;
+        String rootsLine = "";
+
+        for(Double currentRoot : rootsOfEquation)
+        {
+            countOfRoots++;
+            DecimalFormat df = new DecimalFormat("#.##");
+            rootsLine += df.format(currentRoot) + " ";
+        }
+
+        rootsLabel.setText(String.valueOf(rootsLine));
+        countOfRootsLabel.setText("Count of roots: " + countOfRoots);
+    }
+
+    private boolean isDiscriminantMoreThanZero()
+    {
+        return 4 * b * b - 12 * a * c < 0;
+    }
+
+    private ArrayList<Double> oneRootSearching()
+    {
+        ArrayList<Double> rootsOfEquation = new ArrayList<>();
+
+        if(a > 0 && cubicEquation(0) > 0 || a < 0 && cubicEquation(0) < 0)
+        {
+            rootsOfEquation.add(searchingLeftScope());
+        }
+        else
+        {
+            rootsOfEquation.add(searchingRightScope());
+        }
+        return rootsOfEquation;
+    }
+
+    private double searchingLeftScope()
+    {
+        int leftScope, rightScope = 0, currentValue = 0;
+
+        while(cubicEquation(currentValue) > 0)
+        {
+            rightScope = currentValue;
+            currentValue -= 1;
+        }
+
+        leftScope = currentValue;
+
+        return searchingValueInScope(leftScope, rightScope);
+    }
+
+    private double searchingValueInScope(double leftScope, double rightScope)
+    {
+        double currentValueOfEquation = cubicEquation(leftScope);
+        if(Math.abs(currentValueOfEquation) <= EPSILON)
+            return leftScope;
+
+        currentValueOfEquation = cubicEquation(rightScope);
+        if(Math.abs(currentValueOfEquation) <= EPSILON)
+            return rightScope;
+
+        double mid = (double)leftScope / 2 + (double)rightScope / 2;
+        currentValueOfEquation = cubicEquation(mid);
+        if(Math.abs(currentValueOfEquation) <= EPSILON)
+            return mid;
+
+        if(a > 0 && currentValueOfEquation > 0 || a < 0 && currentValueOfEquation < EPSILON)
+            return searchingValueInScope(leftScope, mid);
+        else
+            return searchingValueInScope(mid, rightScope);
+    }
+
+    private double searchingRightScope()
+    {
+        return Double.parseDouble(null);
+    }
+
+    private ArrayList<Double> multipleRootsSearching()
+    {
+
+        return null;
     }
 }
