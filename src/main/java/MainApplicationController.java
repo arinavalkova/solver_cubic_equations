@@ -169,20 +169,20 @@ public class MainApplicationController
 
         if(a > 0 && cubicEquation(0) > 0 || a < 0 && cubicEquation(0) < 0)
         {
-            rootsOfEquation.add(searchingLeftScope(a > 0));
+            rootsOfEquation.add(searchingLeftScope(0));
         }
         else
         {
-            rootsOfEquation.add(searchingRightScope(a > 0));
+            rootsOfEquation.add(searchingRightScope(0));
         }
         return rootsOfEquation;
     }
 
-    private double searchingLeftScope(boolean isAMoreThenZero)
+    private double searchingLeftScope(double scope)
     {
-        int leftScope, rightScope = 0, currentValue = 0;
+        double leftScope, rightScope = scope, currentValue = 0;
 
-        if(isAMoreThenZero)
+        if(a > 0)
         {
             while (cubicEquation(currentValue) > 0)
             {
@@ -206,7 +206,6 @@ public class MainApplicationController
 
     private double searchingValueInScope(double leftScope, double rightScope)
     {
-        System.out.println(leftScope + " " + rightScope);
         double currentValueOfEquation = cubicEquation(leftScope);
         if(Math.abs(currentValueOfEquation) <= EPSILON)
             return leftScope;
@@ -226,11 +225,11 @@ public class MainApplicationController
             return searchingValueInScope(mid, rightScope);
     }
 
-    private double searchingRightScope(boolean isAMoreThenZero)
+    private double searchingRightScope(double scope)
     {
-        int leftScope = 0, rightScope, currentValue = 0;
+        double leftScope = scope, rightScope, currentValue = 0;
 
-        if(isAMoreThenZero)
+        if(a > 0)
         {
             while (cubicEquation(currentValue) < 0)
             {
@@ -254,7 +253,23 @@ public class MainApplicationController
 
     private ArrayList<Double> multipleRootsSearching()
     {
+        ArrayList<Double> rootsOfEquation = new ArrayList<>();
 
-        return null;
+        double firstRoot = (double)(-2 * b) / (6 * a) + (double)Math.sqrt(4 * b * b - 12 * a * c) / (6 * a);
+        double secondRoot = (double)(-2 * b) / (6 * a) - (double)Math.sqrt(4 * b * b - 12 * a * c) / (6 * a);
+
+        if(cubicEquation(firstRoot) < -EPSILON && cubicEquation(secondRoot) < -EPSILON)
+        {
+            if(a > 0)
+            {
+                rootsOfEquation.add(searchingRightScope(Math.min(firstRoot, secondRoot)));
+            }
+            else
+            {
+                rootsOfEquation.add(searchingLeftScope(Math.max(firstRoot, secondRoot)));
+            }
+        }
+
+        return rootsOfEquation;
     }
 }
