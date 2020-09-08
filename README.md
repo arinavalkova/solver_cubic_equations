@@ -1,0 +1,3 @@
+# SolverCubicEquations
+
+![](work.gif)
