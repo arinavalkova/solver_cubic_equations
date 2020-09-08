@@ -269,6 +269,39 @@ public class MainApplicationController
                 rootsOfEquation.add(searchingLeftScope(Math.max(firstRoot, secondRoot)));
             }
         }
+        else if(cubicEquation(firstRoot) > EPSILON && cubicEquation(secondRoot) > EPSILON)
+        {
+            if(a > 0)
+            {
+                rootsOfEquation.add(searchingLeftScope(Math.min(firstRoot, secondRoot)));
+            }
+            else
+            {
+                rootsOfEquation.add(searchingRightScope(Math.max(firstRoot, secondRoot)));
+            }
+        }
+        else if(Math.abs(cubicEquation(Math.min(firstRoot, secondRoot))) < EPSILON)
+        {
+            double root1 = Math.min(firstRoot, secondRoot);
+            rootsOfEquation.add(root1);
+
+            double root2 = searchingRightScope(Math.min(firstRoot, secondRoot));
+            if(root2 != root1)
+            {
+                rootsOfEquation.add(root2);
+            }
+        }
+        else if(Math.abs(cubicEquation(Math.max(firstRoot, secondRoot))) < EPSILON)
+        {
+            double root1 = Math.max(firstRoot, secondRoot);
+            rootsOfEquation.add(root1);
+
+            double root2 = searchingLeftScope(Math.max(firstRoot, secondRoot));
+            if(root2 != root1)
+            {
+                rootsOfEquation.add(root2);
+            }
+        }
 
         return rootsOfEquation;
     }

@@ -19,8 +19,9 @@ public class Main extends Application
 
         primaryStage.setScene(scene);
         primaryStage.setTitle("Solution of cubic equations");
-        primaryStage.setWidth(700);
+        primaryStage.setWidth(650);
         primaryStage.setHeight(800);
+        primaryStage.setResizable(false);
 
         primaryStage.show();
     }
