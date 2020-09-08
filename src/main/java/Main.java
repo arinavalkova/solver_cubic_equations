@@ -18,7 +18,7 @@ public class Main extends Application
         Scene scene = new Scene(root);
 
         primaryStage.setScene(scene);
-        primaryStage.setTitle("Solution of cubic equations");
+        primaryStage.setTitle("Solving cubic equations");
         primaryStage.setWidth(650);
         primaryStage.setHeight(800);
         primaryStage.setResizable(false);

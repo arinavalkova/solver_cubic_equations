@@ -12,12 +12,8 @@ import java.util.ArrayList;
 
 public class MainApplicationController
 {
-    private static double a;
-    private static double b;
-    private static double c;
-    private static double d;
-
-    private static final double EPSILON = 0.0001;
+    private static final double MAX_VALUE = 0x7fffffff;
+    private ArrayList<Double> coefficients;
 
     @FXML
     private JFXTextField firstTextField;
@@ -70,9 +66,11 @@ public class MainApplicationController
         try
         {
             cleanLabels();
-            getCoefficients();
 
-            ArrayList<Double> rootsOfEquation = solveEquation();
+            coefficients = getCoefficients();
+            SolverCubicEquations solverCubicEquations = new SolverCubicEquations(coefficients);
+
+            ArrayList<Double> rootsOfEquation = solverCubicEquations.solveEquation();
             if (rootsOfEquation != null)
             {
                 printRoots(rootsOfEquation);
@@ -86,24 +84,25 @@ public class MainApplicationController
         }
     }
 
-    private void cleanLabels()
+    private void printRoots(ArrayList<Double> rootsOfEquation)
     {
-        errorsLabel.setText("");
-        rootsLabel.setText("");;
-        countOfRootsLabel.setText("");
-    }
+        int countOfRoots = 0;
+        String rootsLine = "";
 
-    private void getCoefficients()
-    {
-        a = Double.parseDouble(firstTextField.getText());
-        b = Double.parseDouble(secondTextField.getText());
-        c = Double.parseDouble(thirdTextField.getText());
-        d = Double.parseDouble(fourthTextField.getText());
+        for(Double currentRoot : rootsOfEquation)
+        {
+            countOfRoots++;
+            DecimalFormat df = new DecimalFormat("#.####");
+            rootsLine += df.format(currentRoot) + " ";
+        }
+
+        rootsLabel.setText(rootsLine);
+        countOfRootsLabel.setText("Count of roots: " + countOfRoots);
     }
 
     private void solvePrintGraphic(ArrayList<Double> rootsOfEquation)
     {
-        double min = 9999999, max = 0;///////////////////
+        double min = MAX_VALUE, max = 0;
 
         if(rootsOfEquation.size() > 1)
         {
@@ -146,7 +145,6 @@ public class MainApplicationController
         {
             step = (int) ((maxRoot - minRoot) / 10);
         }
-        System.out.println(step);
         printGraphic((int) minRoot - 3 * step, (int) maxRoot + 3 * step, step);
     }
 
@@ -158,11 +156,12 @@ public class MainApplicationController
         final LineChart<Number,Number> lineChart = new LineChart<Number,Number>(xAxis,yAxis);
 
         XYChart.Series series = new XYChart.Series();
-        series.setName(a + " * x^3 + " + b + " * x^2 + " + c + " * x + " + d);
+        series.setName(coefficients.get(0) + " * x^3 + " + coefficients.get(1) + " * x^2 + " + coefficients.get(2) +
+                " * x + " + coefficients.get(3));
 
         for(int i = leftScope; i <= rightScope; i += step)//вычислить тут с какого i лучше по какое и шаг
         {
-            series.getData().add(new XYChart.Data(i, cubicEquation(i)));
+            series.getData().add(new XYChart.Data(i, SolverCubicEquations.cubicEquation(i)));
         }
 
         if(!graphicsPane.getChildren().isEmpty())
@@ -171,198 +170,22 @@ public class MainApplicationController
         lineChart.getData().add(series);
     }
 
-    private double cubicEquation(double i)
+    private void cleanLabels()
     {
-        return a * i * i * i + b * i * i + c * i + d;
+        errorsLabel.setText("");
+        rootsLabel.setText("");;
+        countOfRootsLabel.setText("");
     }
 
-    private ArrayList<Double> solveEquation()
+    private ArrayList<Double> getCoefficients()
     {
-        ArrayList<Double> rootsOfEquation = null;
+        ArrayList<Double> coefficients = new ArrayList<>();
 
-        if(isDiscriminantMoreThanZero())
-        {
-            rootsOfEquation = oneRootSearching();
-        }
-        else
-        {
-            rootsOfEquation = multipleRootsSearching();
-        }
-        return rootsOfEquation;
-    }
+        coefficients.add(Double.parseDouble(firstTextField.getText()));
+        coefficients.add(Double.parseDouble(secondTextField.getText()));
+        coefficients.add(Double.parseDouble(thirdTextField.getText()));
+        coefficients.add(Double.parseDouble(fourthTextField.getText()));
 
-    private void printRoots(ArrayList<Double> rootsOfEquation)
-    {
-        int countOfRoots = 0;
-        String rootsLine = "";
-
-        for(Double currentRoot : rootsOfEquation)
-        {
-            countOfRoots++;
-            DecimalFormat df = new DecimalFormat("#.####");
-            rootsLine += df.format(currentRoot) + " ";
-        }
-
-        rootsLabel.setText(String.valueOf(rootsLine));
-        countOfRootsLabel.setText("Count of roots: " + countOfRoots);
-    }
-
-    private boolean isDiscriminantMoreThanZero()
-    {
-        return 4 * b * b - 12 * a * c < 0;
-    }
-
-    private ArrayList<Double> oneRootSearching()
-    {
-        ArrayList<Double> rootsOfEquation = new ArrayList<>();
-
-        if(a > 0 && cubicEquation(0) > 0 || a < 0 && cubicEquation(0) < 0)
-        {
-            rootsOfEquation.add(searchingLeftScope(0, a > 0));
-        }
-        else
-        {
-            rootsOfEquation.add(searchingRightScope(0, a > 0));
-        }
-        return rootsOfEquation;
-    }
-
-    private double searchingLeftScope(double scope, boolean growUp)
-    {
-        double leftScope = 0, rightScope = scope, currentValue = scope;
-
-        if(a > 0)
-        {
-            while (cubicEquation(currentValue) >= 0)
-            {
-                rightScope = currentValue;
-                currentValue -= 1;
-            }
-        }
-        else
-        {
-            while (cubicEquation(currentValue) <= 0)
-            {
-                rightScope = currentValue;
-                currentValue -= 1;
-            }
-        }
-
-        leftScope = currentValue;
-
-        return searchingValueInScope(leftScope, rightScope, growUp);
-    }
-
-    private double searchingValueInScope(double leftScope, double rightScope, boolean growUp)
-    {
-        double currentValueOfEquation = cubicEquation(leftScope);
-        if(Math.abs(currentValueOfEquation) <= EPSILON)
-            return leftScope;
-
-        currentValueOfEquation = cubicEquation(rightScope);
-        if(Math.abs(currentValueOfEquation) <= EPSILON)
-            return rightScope;
-
-        double mid = (double)leftScope / 2 + (double)rightScope / 2;
-        currentValueOfEquation = cubicEquation(mid);
-        if(Math.abs(currentValueOfEquation) <= EPSILON)
-            return mid;
-
-        if(growUp && currentValueOfEquation > 0 || !growUp && currentValueOfEquation < EPSILON)
-            return searchingValueInScope(leftScope, mid, growUp);
-        else
-            return searchingValueInScope(mid, rightScope, growUp);
-    }
-
-    private double searchingRightScope(double scope, boolean growUp)
-    {
-        double leftScope = scope, rightScope, currentValue = scope;
-
-        if(a > 0)
-        {
-            while (cubicEquation(currentValue) <= 0)
-            {
-                leftScope = currentValue;
-                currentValue += 1;
-            }
-        }
-        else
-        {
-            while (cubicEquation(currentValue) >= 0)
-            {
-                leftScope = currentValue;
-                currentValue += 1;
-            }
-        }
-
-        rightScope = currentValue;
-
-        return searchingValueInScope(leftScope, rightScope, growUp);
-    }
-
-    private ArrayList<Double> multipleRootsSearching()
-    {
-        ArrayList<Double> rootsOfEquation = new ArrayList<>();
-
-        double firstRoot = (double)(-2 * b) / (6 * a) + (double)Math.sqrt(4 * b * b - 12 * a * c) / (6 * a);
-        double secondRoot = (double)(-2 * b) / (6 * a) - (double)Math.sqrt(4 * b * b - 12 * a * c) / (6 * a);
-
-        if(cubicEquation(firstRoot) < -EPSILON && cubicEquation(secondRoot) < -EPSILON)
-        {
-            if(a > 0)
-            {
-                rootsOfEquation.add(searchingRightScope(Math.min(firstRoot, secondRoot), a > 0));
-            }
-            else
-            {
-                rootsOfEquation.add(searchingLeftScope(Math.max(firstRoot, secondRoot), a > 0));
-            }
-        }
-        else if(cubicEquation(firstRoot) > EPSILON && cubicEquation(secondRoot) > EPSILON)
-        {
-            if(a > 0)
-            {
-                rootsOfEquation.add(searchingLeftScope(Math.min(firstRoot, secondRoot), a > 0));
-            }
-            else
-            {
-                rootsOfEquation.add(searchingRightScope(Math.max(firstRoot, secondRoot), a > 0));
-            }
-        }
-        else if(Math.abs(cubicEquation(Math.min(firstRoot, secondRoot))) < EPSILON)
-        {
-            double root1 = Math.min(firstRoot, secondRoot);
-            rootsOfEquation.add(root1);
-
-            double root2 = searchingRightScope(Math.min(firstRoot, secondRoot), a > 0);
-            if(root2 != root1)
-            {
-                rootsOfEquation.add(root2);
-            }
-        }
-        else if(Math.abs(cubicEquation(Math.max(firstRoot, secondRoot))) < EPSILON)
-        {
-            double root1 = Math.max(firstRoot, secondRoot);
-            rootsOfEquation.add(root1);
-
-            double root2 = searchingLeftScope(Math.max(firstRoot, secondRoot), a > 0);
-            if(root2 != root1)
-            {
-                rootsOfEquation.add(root2);
-            }
-        }
-        else if(cubicEquation(firstRoot) > EPSILON && cubicEquation(secondRoot) < - EPSILON ||
-                cubicEquation(firstRoot) < -EPSILON && cubicEquation(secondRoot) > EPSILON)
-        {
-            rootsOfEquation.add(searchingLeftScope(Math.min(firstRoot, secondRoot), a > 0));
-            rootsOfEquation.add(searchingValueInScope(Math.min(firstRoot, secondRoot), Math.max(firstRoot, secondRoot), a < 0));
-            rootsOfEquation.add(searchingRightScope(Math.max(firstRoot, secondRoot), a > 0));
-        }
-        else
-        {
-            rootsLabel.setText("Unknown way!");
-        }
-
-        return rootsOfEquation;
+        return coefficients;
     }
 }
